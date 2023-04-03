@@ -117,7 +117,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
                         child: TextFormField(
                           decoration: InputDecoration(
-                            enabledBorder: const OutlineInputBorder(
+                              prefixIcon: const Icon(Icons.title),
+                          enabledBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
                             ),
                             labelText: 'Titre',
@@ -147,6 +148,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
                         child: TextFormField(
                           decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.comment),
                             enabledBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
                             ),
@@ -177,6 +179,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
                         child: TextFormField(
                           decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.calendar_today),
                             enabledBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
                             ),
@@ -258,6 +261,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
                         child: TextFormField(
                           decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.location_on),
                             enabledBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
                             ),
@@ -288,6 +292,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
                         child: TextFormField(
                           decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.location_on),
                             enabledBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
                             ),
@@ -318,6 +323,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
                         child: TextFormField(
                           decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.location_on),
                             enabledBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
                             ),
