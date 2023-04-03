@@ -75,7 +75,8 @@ class SigninScreenState extends State<SigninScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const PreferredSize(
-          preferredSize: Size.fromHeight(100), child: Navbar()),
+        preferredSize: Size.fromHeight(100), child: Navbar(),
+      ),
       backgroundColor: const Color(0xFFF2F2F2),
       body: Center(
           child: Column(
@@ -99,11 +100,12 @@ class SigninScreenState extends State<SigninScreen> {
                                 labelText: "Email",
                                 focusedBorder: OutlineInputBorder(
                                     borderSide:
-                                    BorderSide(color: Colors.grey.shade400)),
+                                    BorderSide(color: Colors.grey.shade400),),
                                 filled: true,
                                 fillColor: Colors.grey.shade200,
                                 hintText: "Email",
-                                hintStyle: TextStyle(color: Colors.grey[500])),
+                                hintStyle: TextStyle(color: Colors.grey[500])
+                            ),
                             inputFormatters: <TextInputFormatter>[
                               FilteringTextInputFormatter.allow(RegExp('')),
                             ],
@@ -111,8 +113,9 @@ class SigninScreenState extends State<SigninScreen> {
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'L\'adresse email doit être complété';
-                              } else
-                              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                              } else if (!RegExp(
+                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(
+                                  value)) {
                                 return 'L\'adresse ne peut pas contenir de symboles autres que @, _, - ou .';
                               }
                               return null;

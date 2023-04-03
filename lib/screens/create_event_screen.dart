@@ -102,12 +102,12 @@ class CreateEventScreenState extends State<CreateEventScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const PreferredSize(
-          preferredSize: Size.fromHeight(100),
-          child: Navbar(),
-        ),
-        backgroundColor: const Color(0xFFF2F2F2),
-        body: Center(
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(100),
+        child: Navbar(),
+      ),
+      backgroundColor: const Color(0xFFF2F2F2),
+      body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -121,59 +121,56 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        child: TextFormField(
-                          decoration: InputDecoration(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          child: TextFormField(
+                            decoration: InputDecoration(
                               prefixIcon: const Icon(Icons.title),
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
+                              enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white)),
+                              labelText: 'Titre',
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey
+                                    .shade400),
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey.shade200,
+                              hintText: 'Titre',
+                              hintStyle: TextStyle(color: Colors.grey[500]),
                             ),
-                            labelText: 'Titre',
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey
-                                  .shade400),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey.shade200,
-                            hintText: 'Titre',
-                            hintStyle: TextStyle(color: Colors.grey[500]),
-                          ),
-                          controller: myControllerTitle,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Le titre doit être complété';
-                            } else if (!RegExp(r'^[a-zA-Z0-9\'+'À-ÖØ-öø-ÿ]+\$').hasMatch(
-                                value)) {
-                              return 'Le titre peut uniquement contenir des lettres ou chiffres';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
+                            controller: myControllerTitle,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Le titre doit être complété';
+                              } else if (!RegExp(
+                                  r'^[a-zA-Z0-9\' + 'À-ÖØ-öø-ÿ]+\$').hasMatch(
+                                  value)) {
+                                return 'Le titre peut uniquement contenir des lettres ou chiffres';
+                              }
+                              return null;
+                            },
+                          )),
                       const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
                         child: TextFormField(
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.comment),
-                            enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            labelText: 'Description',
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey
-                                  .shade400),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey.shade200,
-                            hintText: 'Description',
-                            hintStyle: TextStyle(color: Colors.grey[500]),
-                          ),
+                              prefixIcon: const Icon(Icons.comment),
+                              enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white)),
+                              labelText: 'Description',
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey
+                                      .shade400)),
+                              filled: true,
+                              fillColor: Colors.grey.shade200,
+                              hintText: 'Description',
+                              hintStyle: TextStyle(color: Colors.grey[500])),
                           controller: myControllerDescription,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'La description doit être complété';
-                            } else if (!RegExp(r'^[a-zA-Z0-9\'+'À-ÖØ-öø-ÿ]+\$').hasMatch(
+                            } else if (!RegExp(
+                                r'^[a-zA-Z0-9\' + 'À-ÖØ-öø-ÿ]+\$').hasMatch(
                                 value)) {
                               return 'Le description peut uniquement contenir des lettres ou chiffres';
                             }
@@ -193,7 +190,8 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                             labelText: 'Date et heure',
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Colors.grey.shade400),
+                                color: Colors.grey.shade400,
+                              ),
                             ),
                             filled: true,
                             fillColor: Colors.grey.shade200,
@@ -204,8 +202,9 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'La date et l\'heure doit être complété';
-                            } else if (!RegExp(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$').hasMatch(
-                                value)) {
+                            } else if (!RegExp(
+                                r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$')
+                                .hasMatch(value)) {
                               return 'La date et l\'heure peut uniquement contenir une date et une heure';
                             }
                             return null;
@@ -255,7 +254,9 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                                     monthName = 'Décembre';
                                     break;
                                 }
-                                myControllerDateTime.text = '${date.day} ${monthName} ${date.year} à ${date.hour}h ${date.minute}min';
+                                myControllerDateTime.text =
+                                '${date.day} ${monthName} ${date.year} à ${date
+                                    .hour}h ${date.minute}min';
                               },
                               currentTime: DateTime.now(),
                               locale: LocaleType.fr,
@@ -268,151 +269,168 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             submitForm(
-                                myControllerTitle.text,
-                                myControllerDescription.text,
-                                myControllerStreet.text,
-                                myControllerCity.text,
-                                myControllerZipcode.text,
-                                _longitude,
-                                _latitude);
-                          }
-                        }, child: null,
-                      )),
-                  const SizedBox(height: 10),
-                  Checkbox(
-                      value: isChecked,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          isChecked = value!;
-                        });
-                      }),
-                  isChecked
-                      ? MapWidget(selectedLocation: _selectedLocation)
-                      : Column(children: [
-                           Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.location_on),
-                            enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            labelText: 'Adresse',
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey
-                                  .shade400),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey.shade200,
-                            hintText: 'Adresse',
-                            hintStyle: TextStyle(color: Colors.grey[500]),
-                          ),
-                          controller: myControllerStreet,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'L`adresse postal doit être complété';
-                            } else if (!RegExp(r'^[a-zA-Z0-9\'+'À-ÖØ-öø-ÿ]+\$').hasMatch(
-                                value)) {
-                              return 'L`adresse peut uniquement contenir des lettres ou chiffres';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                          const SizedBox(height: 10),
-                          Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.location_on),
-                            enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            labelText: 'Ville',
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey
-                                  .shade400),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey.shade200,
-                            hintText: 'Ville',
-                            hintStyle: TextStyle(color: Colors.grey[500]),
-                          ),
-                          controller: myControllerCity,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'La ville doit être complété';
-                            } else if (!RegExp(r'^[a-zA-Z\'+'À-ÖØ-öø-ÿ]+\$').hasMatch(
-                                value)) {
-                              return 'La ville peut uniquement contenir des lettres ou chiffres';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                          const SizedBox(height: 10),
-                          Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.location_on),
-                            enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            labelText: 'Code postal',
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey
-                                  .shade400),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey.shade200,
-                            hintText: 'Code postal',
-                            hintStyle: TextStyle(color: Colors.grey[500]),
-                          ),
-                          controller: myControllerZipcode,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Le code postal doit être complété';
-                            } else if (!RegExp(r'^(0[1-9]|[1-9][0-9])[0-9]{3}$').hasMatch(
-                                value)) {
-                              return 'Le code postal peut uniquement contenir des Chiffres';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                        ]),
-                  const SizedBox(height: 25),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        if (isChecked) {
-                          submitForm(
-                              myControllerTitle.text,
-                              myControllerDescription.text,
-                              null,
-                              null,
-                              null,
-                              _longitude,
-                              _latitude);
-                        } else {
-                          submitForm(
                               myControllerTitle.text,
                               myControllerDescription.text,
                               myControllerStreet.text,
                               myControllerCity.text,
                               myControllerZipcode.text,
                               _longitude,
-                              _latitude);
-                        }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA084DC),
-                      minimumSize: const Size(150, 40),
-                    ),
-                    child: const Text(
-                      'Créer',
-                      style: TextStyle(fontWeight: FontWeight.bold)))));
+                              _latitude,
+                            );
+                          }
+                        },
+                        child: Text('Submit'),
+                      ),
+                      const SizedBox(height: 10),
+                      Checkbox(
+                          value: isChecked,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              isChecked = value!;
+                            });
+                          }),
+                      isChecked
+                          ? MapWidget(selectedLocation: _selectedLocation)
+                          : Column(children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.location_on),
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                              ),
+                              labelText: 'Adresse',
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey
+                                    .shade400),
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey.shade200,
+                              hintText: 'Adresse',
+                              hintStyle: TextStyle(color: Colors.grey[500]),
+                            ),
+                            controller: myControllerStreet,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'L`adresse postal doit être complété';
+                              } else
+                              if (!RegExp(r'^[a-zA-Z0-9\' + 'À-ÖØ-öø-ÿ]+\$')
+                                  .hasMatch(
+                                  value)) {
+                                return 'L`adresse peut uniquement contenir des lettres ou chiffres';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.location_on),
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                              ),
+                              labelText: 'Ville',
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey
+                                    .shade400),
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey.shade200,
+                              hintText: 'Ville',
+                              hintStyle: TextStyle(color: Colors.grey[500]),
+                            ),
+                            controller: myControllerCity,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'La ville doit être complété';
+                              } else if (!RegExp(r'^[a-zA-Z\' + 'À-ÖØ-öø-ÿ]+\$')
+                                  .hasMatch(
+                                  value)) {
+                                return 'La ville peut uniquement contenir des lettres ou chiffres';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.location_on),
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                              ),
+                              labelText: 'Code postal',
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey
+                                    .shade400),
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey.shade200,
+                              hintText: 'Code postal',
+                              hintStyle: TextStyle(color: Colors.grey[500]),
+                            ),
+                            controller: myControllerZipcode,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Le code postal doit être complété';
+                              } else
+                              if (!RegExp(r'^(0[1-9]|[1-9][0-9])[0-9]{3}$')
+                                  .hasMatch(
+                                  value)) {
+                                return 'Le code postal peut uniquement contenir des Chiffres';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ]),
+                      const SizedBox(height: 25),
+                      ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              if (isChecked) {
+                                submitForm(
+                                    myControllerTitle.text,
+                                    myControllerDescription.text,
+                                    null,
+                                    null,
+                                    null,
+                                    _longitude,
+                                    _latitude);
+                              } else {
+                                submitForm(
+                                    myControllerTitle.text,
+                                    myControllerDescription.text,
+                                    myControllerStreet.text,
+                                    myControllerCity.text,
+                                    myControllerZipcode.text,
+                                    _longitude,
+                                    _latitude);
+                              }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFA084DC),
+                            minimumSize: const Size(150, 40),
+                          ),
+                          child: const Text(
+                            'Créer',
+                            style: TextStyle(fontWeight:
+                            FontWeight
+                                .
+                            bold
+                            ),
+                          )),
+                    ],
+                  ))
+            ],
+          )),
+    );
   }
 }
