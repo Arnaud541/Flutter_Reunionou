@@ -1,7 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:positioned_tap_detector_2/positioned_tap_detector_2.dart';
 import 'package:reunionou/screens/create_invitation_screen.dart';
+import 'package:reunionou/widgets/map_widget.dart';
+import 'package:reunionou/widgets/mycheckbox.dart';
 
 import '../widgets/navbar.dart';
 
@@ -16,9 +21,10 @@ class CreateEventScreen extends StatefulWidget {
 
 class CreateEventScreenState extends State<CreateEventScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  double _latitude = 0.0;
-  double _longitude = 0.0;
+  bool isChecked = false;
+  final LatLng _selectedLocation = LatLng(10.0002, 12.3568);
+  final double _latitude = 0.0;
+  final double _longitude = 0.0;
 
   final myControllerTitle = TextEditingController();
   final myControllerDescription = TextEditingController();
@@ -41,33 +47,32 @@ class CreateEventScreenState extends State<CreateEventScreen> {
     super.dispose();
   }
 
-  Future<Map<String, double>> getLatLong(String address, String city) async {
-    final Dio dio = Dio();
-    Response response = await dio.get(
-        "https://api-adresse.data.gouv.fr/search/?q=$address&city=$city&limit=1");
+  // Future<Map<String, double>> getLatLong(String address) async {
+  //   final Dio dio = Dio();
+  //   Response response = await dio.get(
+  //       "https://api-adresse.data.gouv.fr/search/?",
+  //       queryParameters: {"q": address, "limit": "1"});
+  //   if (response.statusCode == 200) {
+  //     final lat =
+  //         response.data['data']['features']['geometry']['coordinates'][0];
+  //     final lng =
+  //         response.data['data']['features']['geometry']['coordinates'][1];
+  //     return {'latitude': lat, 'longitude': lng};
+  //   } else {
+  //     throw Exception('Failed to load location');
+  //   }
+  // }
 
-    if (response.statusCode == 200) {
-      final lat =
-          response.data['data']['features']['geometry']['coordinates'][0];
-      final lng =
-          response.data['data']['features']['geometry']['coordinates'][1];
-      return {'latitude': lat, 'longitude': lng};
-    } else {
-      throw Exception('Failed to load location');
-    }
-  }
+  // void _onAddressChanged(String address) async {
+  //   final latLng = await getLatLong(address);
+  //   setState(() {
+  //     _latitude = latLng['latitude']!;
+  //     _longitude = latLng['longitude']!;
+  //   });
+  // }
 
-  void _onAddressChanged(String address) async {
-    final latLng =
-        await getLatLong(myControllerStreet.text, myControllerCity.text);
-    setState(() {
-      _latitude = latLng['latitude']!;
-      _longitude = latLng['longitude']!;
-    });
-  }
-
-  void submitForm(String title, String description, String street, String city,
-      String zipcode, double longitude, double latitude) async {
+  void submitForm(String title, String description, String? street,
+      String? city, String? zipcode, double longitude, double latitude) async {
     final Dio dio = Dio();
     Response response =
         await dio.post('https://fruits.shrp.dev/auth/login', data: {
@@ -163,91 +168,121 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: TextFormField(
-                      onChanged: _onAddressChanged,
-                      decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          labelText: "Adresse",
-                          focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade400)),
-                          filled: true,
-                          fillColor: Colors.grey.shade200,
-                          hintText: "Adresse",
-                          hintStyle: TextStyle(color: Colors.grey[500])),
-                      controller: myControllerStreet,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Adresse non valide';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          labelText: "Ville",
-                          focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade400)),
-                          filled: true,
-                          fillColor: Colors.grey.shade200,
-                          hintText: "Ville",
-                          hintStyle: TextStyle(color: Colors.grey[500])),
-                      controller: myControllerCity,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Ville non valide';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.lock),
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white)),
-                          labelText: "Code postal",
-                          focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade400)),
-                          filled: true,
-                          fillColor: Colors.grey.shade200,
-                          hintText: "Code postal",
-                          hintStyle: TextStyle(color: Colors.grey[500])),
-                      controller: myControllerZipcode,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Code postal non valide';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
+                  Checkbox(
+                      value: isChecked,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isChecked = value!;
+                        });
+                      }),
+                  isChecked
+                      ? MapWidget(selectedLocation: _selectedLocation)
+                      : Column(children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 25.0),
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white)),
+                                  labelText: "Adresse",
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade400)),
+                                  filled: true,
+                                  fillColor: Colors.grey.shade200,
+                                  hintText: "Adresse",
+                                  hintStyle:
+                                      TextStyle(color: Colors.grey[500])),
+                              controller: myControllerStreet,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Adresse non valide';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 25.0),
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white)),
+                                  labelText: "Ville",
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade400)),
+                                  filled: true,
+                                  fillColor: Colors.grey.shade200,
+                                  hintText: "Ville",
+                                  hintStyle:
+                                      TextStyle(color: Colors.grey[500])),
+                              controller: myControllerCity,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Ville non valide';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 25.0),
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.lock),
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white)),
+                                  labelText: "Code postal",
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade400)),
+                                  filled: true,
+                                  fillColor: Colors.grey.shade200,
+                                  hintText: "Code postal",
+                                  hintStyle:
+                                      TextStyle(color: Colors.grey[500])),
+                              controller: myControllerZipcode,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Code postal non valide';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ]),
                   const SizedBox(height: 25),
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        submitForm(
-                            myControllerTitle.text,
-                            myControllerDescription.text,
-                            myControllerStreet.text,
-                            myControllerCity.text,
-                            myControllerZipcode.text,
-                            _longitude,
-                            _latitude);
+                        if (isChecked) {
+                          submitForm(
+                              myControllerTitle.text,
+                              myControllerDescription.text,
+                              null,
+                              null,
+                              null,
+                              _longitude,
+                              _latitude);
+                        } else {
+                          submitForm(
+                              myControllerTitle.text,
+                              myControllerDescription.text,
+                              myControllerStreet.text,
+                              myControllerCity.text,
+                              myControllerZipcode.text,
+                              _longitude,
+                              _latitude);
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -260,7 +295,7 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                     ),
                   ),
                 ],
-              ))
+              )),
             ],
           ),
         ));
