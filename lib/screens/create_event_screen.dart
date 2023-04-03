@@ -15,10 +15,10 @@ class CreateEventScreen extends StatefulWidget {
   const CreateEventScreen({Key? key}) : super(key: key);
 
   @override
-  _CreateEventScreenState createState() => _CreateEventScreenState();
+  CreateEventScreenState createState() => CreateEventScreenState();
 }
 
-class _CreateEventScreenState extends State<CreateEventScreen> {
+class CreateEventScreenState extends State<CreateEventScreen> {
   final _formKey = GlobalKey<FormState>();
   bool isChecked = false;
   final LatLng _selectedLocation = LatLng(10.0002, 12.3568);
@@ -86,10 +86,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         }));
 
     if (response.statusCode == 200) {
+      // ignore: use_build_context_synchronously
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => const CreateInvitationScreen()));
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text("Maintenant, invitez des gens à votre événement !")),

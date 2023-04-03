@@ -2,15 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:provider/provider.dart';
-import 'package:reunionou/providers/participant_provider.dart';
 import 'package:reunionou/widgets/comment_preview.dart';
 import 'package:reunionou/widgets/navbar.dart';
 import 'package:reunionou/class/participant.dart';
 import 'package:reunionou/widgets/participant_preview.dart';
 
-import '../class/comment.dart';
-import '../class/event.dart';
+import 'package:reunionou/class/comment.dart';
+import 'package:reunionou/class/event.dart';
 
 class EventScreen extends StatelessWidget {
   final Event event;
@@ -49,6 +47,41 @@ class EventScreen extends StatelessWidget {
           comment["created_at"]));
     }
     return comments;
+  }
+
+  Future<Map<String, double>> getAddress() async {
+    final Dio dio = Dio();
+    Map<String, double> resultat = {};
+    // ignore: unnecessary_null_comparison
+    if (event.latitude != null && event.longitude != null) {
+      Response response = await dio.get(
+          "https://api-adresse.data.gouv.fr/reverse/",
+          queryParameters: {"lon": event.longitude, "lat": event.latitude});
+
+      if (response.statusCode == 200) {
+        final address =
+            response.data['data']['features']['properties']["label"];
+
+        resultat = {'address': address};
+      }
+    } else {
+      Response response = await dio
+          .get("https://api-adresse.data.gouv.fr/search/?", queryParameters: {
+        "q": event.street,
+        "city": event.city,
+        "limit": "1"
+      });
+
+      if (response.statusCode == 200) {
+        final lat =
+            response.data['data']['features']['geometry']['coordinates'][0];
+        final lng =
+            response.data['data']['features']['geometry']['coordinates'][1];
+        resultat = {'latitude': lat, 'longitude': lng};
+      }
+    }
+
+    return resultat;
   }
 
   @override
