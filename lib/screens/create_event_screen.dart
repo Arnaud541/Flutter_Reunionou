@@ -305,7 +305,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'La ville doit être complété';
-                            } else if (!RegExp(r'^[a-zA-Z0-9\'+'À-ÖØ-öø-ÿ]+\$').hasMatch(
+                            } else if (!RegExp(r'^[a-zA-Z\'+'À-ÖØ-öø-ÿ]+\$').hasMatch(
                                 value)) {
                               return 'La ville peut uniquement contenir des lettres ou chiffres';
                             }
