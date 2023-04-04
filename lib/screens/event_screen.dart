@@ -10,9 +10,37 @@ import 'package:reunionou/widgets/participant_preview.dart';
 import 'package:reunionou/class/comment.dart';
 import 'package:reunionou/class/event.dart';
 
-class EventScreen extends StatelessWidget {
+class EventScreen extends StatefulWidget {
   final Event event;
   const EventScreen({super.key, required this.event});
+
+  @override
+  EventScreenState createState() => EventScreenState();
+}
+
+class EventScreenState extends State<EventScreen> {
+  late Map<String, double> _coordinates;
+  late String _address;
+  late Event _event;
+
+  @override
+  void initState() {
+    super.initState();
+    _event = widget.event;
+    if(_event.city == null && _event.street == null && _event.zipcode == null) {
+      getCoordinates().then((map) {
+        setState(() {
+          _coordinates = map;
+        });
+      });
+    }
+    if(_event.latitude == null && _event.longitude == null) {
+      setState(() {
+        _address = getAddress() as String;
+      });
+    }
+    
+  }
 
   Future<List<Participant>> getParticipants() async {
     List<Participant> participants = [];
@@ -49,26 +77,14 @@ class EventScreen extends StatelessWidget {
     return comments;
   }
 
-  Future<Map<String, double>> getAddress() async {
+  Future<Map<String, double>> getCoordinates() async {
     final Dio dio = Dio();
-    Map<String, double> resultat = {};
-    // ignore: unnecessary_null_comparison
-    if (event.latitude != null && event.longitude != null) {
-      Response response = await dio.get(
-          "https://api-adresse.data.gouv.fr/reverse/",
-          queryParameters: {"lon": event.longitude, "lat": event.latitude});
+    Map<String, double> coordinates = {};
 
-      if (response.statusCode == 200) {
-        final address =
-            response.data['data']['features']['properties']["label"];
-
-        resultat = {'address': address};
-      }
-    } else {
-      Response response = await dio
+     Response response = await dio
           .get("https://api-adresse.data.gouv.fr/search/?", queryParameters: {
-        "q": event.street,
-        "city": event.city,
+        "q": _event.street,
+        "city": _event.city,
         "limit": "1"
       });
 
@@ -77,11 +93,25 @@ class EventScreen extends StatelessWidget {
             response.data['data']['features']['geometry']['coordinates'][0];
         final lng =
             response.data['data']['features']['geometry']['coordinates'][1];
-        resultat = {'latitude': lat, 'longitude': lng};
+        coordinates = {'latitude': lat, 'longitude': lng};
+        
       }
-    }
+    return coordinates;
+  }
 
-    return resultat;
+  Future<String> getAddress() async {
+    final Dio dio = Dio();
+    String address = "";
+    
+    Response response = await dio.get(
+        "https://api-adresse.data.gouv.fr/reverse/",
+        queryParameters: {"lon": _event.longitude, "lat": _event.latitude});
+
+    if (response.statusCode == 200) 
+    {
+      address = response.data['data']['features']['properties']["label"]; 
+    }
+    return address;
   }
 
   @override
@@ -96,17 +126,20 @@ class EventScreen extends StatelessWidget {
               const SizedBox(height: 25),
               Center(
                   child: Text(
-                "Nom de l'évènement",
-                style: TextStyle(fontSize: 20, color: Colors.grey[400]),
+                _event.title,
+                style: TextStyle(fontSize: 30, color: Colors.grey[400]),
               )),
               const SizedBox(height: 20),
               Center(
                 child: Image.network('https://placehold.co/350x200/png'),
               ),
               const SizedBox(height: 25),
-              const Text(
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pellentesque habitant morbi tristique senectus et netus et malesuada fames. In cursus turpis massa tincidunt."),
+              Text(_event.description),
               const SizedBox(height: 25),
+              Row(children: [
+                const Icon(Icons.location_on_rounded),
+                _event.street == null && _event.city == null && _event.zipcode == null ? Text(_address[0]!["address"]) : 
+              ]),
               Row(children: const [
                 Icon(Icons.group),
                 Padding(
@@ -160,7 +193,8 @@ class EventScreen extends StatelessWidget {
               ),
               FlutterMap(
                 options: MapOptions(
-                    center: LatLng(event.longitude, event.latitude), zoom: 9.2),
+                    center: LatLng(_event.longitude, _event.latitude),
+                    zoom: 9.2),
                 nonRotatedChildren: [
                   AttributionWidget.defaultWidget(
                     source: 'OpenStreetMap contributors',
@@ -176,10 +210,10 @@ class EventScreen extends StatelessWidget {
                   MarkerLayer(
                     markers: [
                       Marker(
-                          point: LatLng(event.longitude, event.latitude),
+                          point: LatLng(_event.longitude, _event.latitude),
                           width: 80,
                           height: 80,
-                          builder: (context) => const Icon(Icons.control_point))
+                          builder: (context) => const Icon(Icons.location_on))
                     ],
                   )
                 ],

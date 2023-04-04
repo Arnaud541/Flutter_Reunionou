@@ -29,21 +29,24 @@ class MyApp extends StatelessWidget {
         home: Provider.of<UserProvider>(context, listen: false).isConnected
             ? const HomeScreen()
             : const SigninScreen(),
-
         onGenerateRoute: (settings) {
           switch (settings.name) {
             case '/profile':
-              return MaterialPageRoute(builder: (context) => const ProfileScreen());
+              return MaterialPageRoute(
+                  builder: (context) => const ProfileScreen());
             case '/invitation':
-              return MaterialPageRoute(builder: (context) => const CreateInvitationScreen());
+              return MaterialPageRoute(
+                  builder: (context) => const CreateInvitationScreen());
             case '/create_event':
-              return MaterialPageRoute(builder: (context) => const CreateEventScreen());
-            case '/event':
-              final eventId = "1";
-              final event = Provider.of<UserProvider>(context, listen: false).getEventById(eventId);
-              return MaterialPageRoute(builder: (context) => EventScreen(event));
+              return MaterialPageRoute(
+                  builder: (context) => const CreateEventScreen());
+            // case '/event':
+            //   final eventId = "1";
+            //   final event = Provider.of<EventProvider>(context, listen: false).getEventById(eventId);
+            //   return MaterialPageRoute(builder: (context) => EventScreen(event));
             case '/signin':
-              return MaterialPageRoute(builder: (context) => const SigninScreen());
+              return MaterialPageRoute(
+                  builder: (context) => const SigninScreen());
             default:
               return null;
           }
