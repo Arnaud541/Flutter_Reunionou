@@ -1,9 +1,11 @@
 class User {
-  String id;
+  int id;
   String email;
-  String avatar;
+  String? avatar;
+  String firstname;
+  String lastname;
   String accessToken;
-  String refreshToken;
 
-  User(this.id, this.email, this.avatar, this.accessToken, this.refreshToken);
+  User(this.id, this.email, this.avatar, this.firstname, this.lastname,
+      this.accessToken);
 }

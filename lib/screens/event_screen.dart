@@ -27,19 +27,20 @@ class EventScreenState extends State<EventScreen> {
   void initState() {
     super.initState();
     _event = widget.event;
-    if(_event.city == null && _event.street == null && _event.zipcode == null) {
+    if (_event.city != null &&
+        _event.street != null &&
+        _event.zipcode != null) {
       getCoordinates().then((map) {
         setState(() {
           _coordinates = map;
         });
       });
     }
-    if(_event.latitude == null && _event.longitude == null) {
+    if (_event.latitude != null && _event.longitude != null) {
       setState(() {
         _address = getAddress() as String;
       });
     }
-    
   }
 
   Future<List<Participant>> getParticipants() async {
@@ -81,35 +82,33 @@ class EventScreenState extends State<EventScreen> {
     final Dio dio = Dio();
     Map<String, double> coordinates = {};
 
-     Response response = await dio
-          .get("https://api-adresse.data.gouv.fr/search/?", queryParameters: {
-        "q": _event.street,
-        "city": _event.city,
-        "limit": "1"
-      });
+    Response response = await dio
+        .get("https://api-adresse.data.gouv.fr/search/?", queryParameters: {
+      "q": _event.street,
+      "city": _event.city,
+      "limit": "1"
+    });
 
-      if (response.statusCode == 200) {
-        final lat =
-            response.data['data']['features']['geometry']['coordinates'][0];
-        final lng =
-            response.data['data']['features']['geometry']['coordinates'][1];
-        coordinates = {'latitude': lat, 'longitude': lng};
-        
-      }
+    if (response.statusCode == 200) {
+      final lat =
+          response.data['data']['features']['geometry']['coordinates'][0];
+      final lng =
+          response.data['data']['features']['geometry']['coordinates'][1];
+      coordinates = {'latitude': lat, 'longitude': lng};
+    }
     return coordinates;
   }
 
   Future<String> getAddress() async {
     final Dio dio = Dio();
     String address = "";
-    
+
     Response response = await dio.get(
         "https://api-adresse.data.gouv.fr/reverse/",
         queryParameters: {"lon": _event.longitude, "lat": _event.latitude});
 
-    if (response.statusCode == 200) 
-    {
-      address = response.data['data']['features']['properties']["label"]; 
+    if (response.statusCode == 200) {
+      address = response.data['data']['features']['properties']["label"];
     }
     return address;
   }
@@ -138,7 +137,7 @@ class EventScreenState extends State<EventScreen> {
               const SizedBox(height: 25),
               Row(children: [
                 const Icon(Icons.location_on_rounded),
-                _event.street == null && _event.city == null && _event.zipcode == null ? Text(_address[0]!["address"]) : 
+                // _event.street == null && _event.city == null && _event.zipcode == null ? Text(_address[0]!["address"]) :
               ]),
               Row(children: const [
                 Icon(Icons.group),

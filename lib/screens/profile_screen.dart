@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:reunionou/class/event.dart';
+import 'package:reunionou/providers/user_provider.dart';
 import 'package:reunionou/widgets/event_preview.dart';
 import 'package:reunionou/widgets/navbar.dart';
 
@@ -78,7 +80,12 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Arnaud Bourgoin',
+              Provider.of<UserProvider>(context, listen: false)
+                      .currentUser!
+                      .firstname +
+                  Provider.of<UserProvider>(context, listen: false)
+                      .currentUser!
+                      .lastname,
               style: TextStyle(fontSize: 17, color: Colors.grey[400]),
             ),
             const SizedBox(height: 50),
