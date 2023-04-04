@@ -7,6 +7,7 @@ import 'package:reunionou/screens/home_screen.dart';
 import 'package:reunionou/screens/create_invitation_screen.dart';
 import 'package:reunionou/screens/profile_screen.dart';
 import 'package:reunionou/screens/signin_screen.dart';
+import 'package:reunionou/screens/signin_invitation_screen.dart';
 
 void main() {
   runApp(ChangeNotifierProvider(
@@ -38,12 +39,14 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(builder: (context) => const CreateInvitationScreen());
             case '/create_event':
               return MaterialPageRoute(builder: (context) => const CreateEventScreen());
-            case '/event':
+/*            case '/event':
               final eventId = "1";
               final event = Provider.of<UserProvider>(context, listen: false).getEventById(eventId);
-              return MaterialPageRoute(builder: (context) => EventScreen(event));
+              return MaterialPageRoute(builder: (context) => EventScreen(event));*/
             case '/signin':
               return MaterialPageRoute(builder: (context) => const SigninScreen());
+            case '/signin_invitation':
+              return MaterialPageRoute(builder: (context) => const SigninInvitationScreen());
             default:
               return null;
           }
