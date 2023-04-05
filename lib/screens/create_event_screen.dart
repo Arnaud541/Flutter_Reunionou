@@ -156,7 +156,7 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Le titre doit être complété';
-                          } else if (!RegExp(r'^[a-zA-Z0-9\' + 'À-ÖØ-öø-ÿ]+\$')
+                          } else if (!RegExp(r"^[a-zA-Z0-9'À-ÖØ-öø-ÿ ]+$")
                               .hasMatch(value)) {
                             return 'Le titre peut uniquement contenir des lettres ou chiffres';
                           }
@@ -183,7 +183,7 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'La description doit être complété';
-                        } else if (!RegExp(r'^[a-zA-Z0-9\' + 'À-ÖØ-öø-ÿ]+\$')
+                        } else if (!RegExp(r"^[a-zA-Z0-9'À-ÖØ-öø-ÿ ]+$")
                             .hasMatch(value)) {
                           return 'Le description peut uniquement contenir des lettres ou chiffres';
                         }
@@ -311,8 +311,7 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'L\'adresse postal doit être complété';
-                                } else if (!RegExp(
-                                        r'^[a-zA-Z0-9\' + 'À-ÖØ-öø-ÿ]+\$')
+                                } else if (!RegExp(r"^[a-zA-Z0-9'À-ÖØ-öø-ÿ ]+$")
                                     .hasMatch(value)) {
                                   return 'L`adresse peut uniquement contenir des lettres ou chiffres';
                                 }
@@ -344,8 +343,7 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'La ville doit être complété';
-                                } else if (!RegExp(
-                                        r'^[a-zA-Z\' + 'À-ÖØ-öø-ÿ]+\$')
+                                } else if (!RegExp(r"^[a-zA-Z'À-ÖØ-öø-ÿ ]+$")
                                     .hasMatch(value)) {
                                   return 'La ville peut uniquement contenir des lettres ou chiffres';
                                 }
