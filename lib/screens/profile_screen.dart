@@ -2,54 +2,54 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:reunionou/class/event.dart';
+import 'package:reunionou/class/user.dart';
 import 'package:reunionou/providers/user_provider.dart';
 import 'package:reunionou/widgets/event_preview.dart';
 import 'package:reunionou/widgets/navbar.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({Key? key}) : super(key: key);
 
-  Future<List<Event>> getCurrentEvents() async {
+  Future<List<Event>> getCurrentEvents(id) async {
     List<Event> currentEvents = [];
 
     final Dio dio = Dio();
     Response response =
-        await dio.get('https://fruits.shrp.dev/items/fruits?fields=*.*');
-
-    for (var element in response.data['data']) {
+        await dio.get('http://localhost:19185/user/$id/live-events');
+    for (var event in response.data['events']) {
+      print(event["longitude"].runtimeType);
+      print(event["latitude"].runtimeType);
       currentEvents.add(Event(
-          element["id"],
-          element["title"],
-          element["description"],
-          element["longitude"],
-          element["latitude"],
-          element["street"],
-          element["city"],
-          element["zipcode"],
-          element["eventDate"]));
+          event["id"],
+          event["title"],
+          event["description"],
+          event["longitude"],
+          event["latitude"],
+          event["street"],
+          event["city"],
+          event["zipcode"],
+          event["date"]));
     }
-
     return currentEvents;
   }
 
-  Future<List<Event>> getParticipatedEvents() async {
+  Future<List<Event>> getParticipatedEvents(id) async {
     List<Event> participatedEvents = [];
-
     final Dio dio = Dio();
     Response response =
-        await dio.get('https://fruits.shrp.dev/items/fruits?fields=*.*');
+        await dio.get('http://localhost:19185/user/$id/past-events');
 
-    for (var element in response.data['data']) {
+    for (var event in response.data['past_events']) {
       participatedEvents.add(Event(
-          element["id"],
-          element["title"],
-          element["description"],
-          element["longitude"],
-          element["latitude"],
-          element["street"],
-          element["city"],
-          element["zipcode"],
-          element["eventDate"]));
+          event["id"],
+          event["title"],
+          event["description"],
+          event["longitude"],
+          event["latitude"],
+          event["street"],
+          event["city"],
+          event["zipcode"],
+          event["date"]));
     }
 
     return participatedEvents;
@@ -57,6 +57,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    User user = Provider.of<UserProvider>(context, listen: false).currentUser!;
     return Scaffold(
         appBar: const PreferredSize(
             preferredSize: Size.fromHeight(100), child: Navbar()),
@@ -82,12 +83,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              Provider.of<UserProvider>(context, listen: false)
-                      .currentUser!
-                      .firstname +
-                  Provider.of<UserProvider>(context, listen: false)
-                      .currentUser!
-                      .lastname,
+              "${user.firstname} ${user.lastname}",
               style: TextStyle(fontSize: 17, color: Colors.grey[400]),
             ),
             const SizedBox(height: 50),
@@ -96,8 +92,9 @@ class ProfileScreen extends StatelessWidget {
               style: TextStyle(fontSize: 17, color: Colors.grey[400]),
             ),
             const SizedBox(height: 20),
-            FutureBuilder(
-              future: getCurrentEvents(),
+            Expanded(
+                child: FutureBuilder(
+              future: getCurrentEvents(user.id),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ListView.builder(
@@ -108,36 +105,39 @@ class ProfileScreen extends StatelessWidget {
                 }
 
                 if (snapshot.hasError) {
+                  print(snapshot.error);
                   return const Text("Erreur d'affichage");
                 }
 
                 return const CircularProgressIndicator();
               },
-            ),
-            const SizedBox(height: 50),
+            )),
+            const SizedBox(height: 25),
             Text(
               'Evènements auxquels vous avez participé',
               style: TextStyle(fontSize: 17, color: Colors.grey[400]),
             ),
             const SizedBox(height: 20),
-            FutureBuilder(
-              future: getParticipatedEvents(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        return EventPreview(event: snapshot.data![index]);
-                      });
-                }
+            Expanded(
+              child: FutureBuilder(
+                future: getParticipatedEvents(user.id),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          return EventPreview(event: snapshot.data![index]);
+                        });
+                  }
 
-                if (snapshot.hasError) {
-                  return const Text("Erreur d'affichage");
-                }
+                  if (snapshot.hasError) {
+                    return const Text("Erreur d'affichage");
+                  }
 
-                return const CircularProgressIndicator();
-              },
-            ),
+                  return const CircularProgressIndicator();
+                },
+              ),
+            )
           ],
         ));
   }

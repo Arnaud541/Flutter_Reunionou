@@ -19,8 +19,8 @@ class EventScreen extends StatefulWidget {
 }
 
 class EventScreenState extends State<EventScreen> {
-  late Map<String, double> _coordinates;
-  late String _address;
+  Map<String, double> _coordinates = {};
+  String _address = "";
   late Event _event;
 
   @override
@@ -37,8 +37,10 @@ class EventScreenState extends State<EventScreen> {
       });
     }
     if (_event.latitude != null && _event.longitude != null) {
-      setState(() {
-        _address = getAddress() as String;
+      getAddress().then((add) {
+        setState(() {
+          _address = add;
+        });
       });
     }
   }
@@ -46,6 +48,7 @@ class EventScreenState extends State<EventScreen> {
   Future<List<Participant>> getParticipants() async {
     List<Participant> participants = [];
     final Dio dio = Dio();
+
     int id = _event.id;
     Response response =
         await dio.get('http://localhost:19185/event/$id/participants');
@@ -56,7 +59,7 @@ class EventScreenState extends State<EventScreen> {
             participant["user_id"] ?? participant["id"],
             participant["firstname"],
             participant["lastname"],
-            participant["avatar"],
+            'https://gravatar.com/avatar/7f4560dbdee0a44569dc3fdb22ea9c8b?s=400&d=robohash&r=x',
             participant["status"],
             participant["email"]));
       }
@@ -64,39 +67,39 @@ class EventScreenState extends State<EventScreen> {
     return participants;
   }
 
-  Future<List<Comment>> getComments() async {
-    List<Comment> comments = [];
-    int id = _event.id;
-    final Dio dio = Dio();
-    Response response =
-        await dio.get('http://localhost:19185/event/$id/comments');
+  // Future<List<Comment>> getComments() async {
+  //   List<Comment> comments = [];
+  //   int id = _event.id;
+  //   print(id);
+  //   final Dio dio = Dio();
+  //   Response response =
+  //       await dio.get('http://localhost:19185/event/$id/comments');
 
-    for (var comment in response.data['comments']) {
-      comments.add(Comment(
-          comment["participant_firstname"],
-          comment["participant_lastname"],
-          comment["created_at"],
-          comment["content"]));
-    }
-    return comments;
-  }
+  //   for (var comment in response.data['comments']) {
+  //     comments.add(Comment(
+  //         comment["participant_firstname"],
+  //         comment["participant_lastname"],
+  //         comment["created_at"],
+  //         comment["content"]));
+  //   }
+  //   return comments;
+  // }
 
   Future<Map<String, double>> getCoordinates() async {
     final Dio dio = Dio();
     Map<String, double> coordinates = {};
 
-    Response response = await dio
-        .get("https://api-adresse.data.gouv.fr/search/?", queryParameters: {
-      "q": _event.street,
-      "city": _event.city,
-      "limit": "1"
-    });
+    String zipcode = _event.zipcode!;
+    String address = _event.street!;
+
+    Response response = await dio.get(
+        "https://api-adresse.data.gouv.fr/search/?q=$address&postcode=$zipcode&limit=1");
 
     if (response.statusCode == 200) {
-      final lat =
-          response.data['data']['features']['geometry']['coordinates'][0];
-      final lng =
-          response.data['data']['features']['geometry']['coordinates'][1];
+      double lat =
+          response.data['features']['geometry']['coordinates'][0].toDouble();
+      double lng =
+          response.data['features']['geometry']['coordinates'][1].toDouble();
       coordinates = {'latitude': lat, 'longitude': lng};
     }
     return coordinates;
@@ -105,13 +108,13 @@ class EventScreenState extends State<EventScreen> {
   Future<String> getAddress() async {
     final Dio dio = Dio();
     String address = "";
-
+    double longitude = _event.longitude!;
+    double latitude = _event.latitude!;
     Response response = await dio.get(
-        "https://api-adresse.data.gouv.fr/reverse/",
-        queryParameters: {"lon": _event.longitude, "lat": _event.latitude});
+        "https://api-adresse.data.gouv.fr/reverse/?lon=$longitude&lat=$latitude");
 
     if (response.statusCode == 200) {
-      address = response.data['data']['features']['properties']["label"];
+      address = response.data['features']['properties']["label"];
     }
     return address;
   }
@@ -153,7 +156,8 @@ class EventScreenState extends State<EventScreen> {
                     child: Text("Participants")),
               ]),
               const SizedBox(height: 25),
-              FutureBuilder(
+              Expanded(
+                  child: FutureBuilder(
                 future: getParticipants(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -171,39 +175,43 @@ class EventScreenState extends State<EventScreen> {
 
                   return const CircularProgressIndicator();
                 },
-              ),
-              const SizedBox(height: 25),
-              Center(
-                  child: Text(
-                "Commentaires",
-                style: TextStyle(fontSize: 20, color: Colors.grey[400]),
               )),
               const SizedBox(height: 25),
-              FutureBuilder(
-                future: getComments(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          return CommentPreview(comment: snapshot.data![index]);
-                        });
-                  }
+              // Center(
+              //     child: Text(
+              //   "Commentaires",
+              //   style: TextStyle(fontSize: 20, color: Colors.grey[400]),
+              // )),
+              // const SizedBox(height: 25),
+              // Expanded(
+              //     child: FutureBuilder(
+              //   future: getComments(),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.hasData) {
+              //       return ListView.builder(
+              //           itemCount: snapshot.data!.length,
+              //           itemBuilder: (context, index) {
+              //             return CommentPreview(comment: snapshot.data![index]);
+              //           });
+              //     }
 
-                  if (snapshot.hasError) {
-                    return const Text("Error");
-                  }
+              //     if (snapshot.hasError) {
+              //       return const Text("Error");
+              //     }
 
-                  return const CircularProgressIndicator();
-                },
-              ),
-              FlutterMap(
+              //     return const CircularProgressIndicator();
+              //   },
+              // )),
+              Expanded(
+                  child: FlutterMap(
                 options: MapOptions(
+                    minZoom: 3,
+                    maxZoom: 18,
                     center: _event.longitude == null && _event.latitude == null
-                        ? LatLng(_coordinates["longitude"]!,
-                            _coordinates["latitude"]!)
-                        : LatLng(_event.longitude, _event.latitude),
-                    zoom: 9.2),
+                        ? LatLng(_coordinates["latitude"]!,
+                            _coordinates["longitude"]!)
+                        : LatLng(_event.latitude!, _event.longitude!),
+                    zoom: 5),
                 nonRotatedChildren: [
                   AttributionWidget.defaultWidget(
                     source: 'OpenStreetMap contributors',
@@ -223,14 +231,12 @@ class EventScreenState extends State<EventScreen> {
                                   _event.latitude == null
                               ? LatLng(_coordinates["longitude"]!,
                                   _coordinates["latitude"]!)
-                              : LatLng(_event.longitude, _event.latitude),
-                          width: 80,
-                          height: 80,
+                              : LatLng(_event.longitude!, _event.latitude!),
                           builder: (context) => const Icon(Icons.location_on))
                     ],
                   )
                 ],
-              ),
+              )),
             ],
           )),
     );
