@@ -44,6 +44,7 @@ dependencies:
   flutter_map: ^3.1.0
   latlong2: ^0.8.1
   positioned_tap_detector_2: ^1.0.4
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:positioned_tap_detector_2/positioned_tap_detector_2.dart';
 import 'package:provider/provider.dart';
@@ -55,35 +56,54 @@ class CreateEventScreenState extends State<CreateEventScreen> {
       String? city,
       String? zipcode,
       double? longitude,
-      double? latitude) async {
-    String token = Provider.of<UserProvider>(context, listen: false)
-        .currentUser!
-        .accessToken;
-    final Dio dio = Dio();
-    Response response = await dio.post('http://localhost:19185/event',
-        data: {
-          'title': title,
-          'description': description,
+      double? latitude,
+      DateTime date) async {
+    try {
+      String token = Provider.of<UserProvider>(context, listen: false)
+          .currentUser!
+          .accessToken;
+
+      final Dio dio = Dio();
+
+      Map<String, dynamic> data = {
+        'title': title,
+        'description': description,
+        'date': date.toIso8601String(),
+      };
+
+      if (longitude != null && latitude != null) {
+        data.addAll({
+          'longitude': longitude,
+          'latitude': latitude,
+        });
+      } else {
+        data.addAll({
           'street': street,
           'city': city,
           'zipcode': zipcode,
-          'longitude': longitude,
-          'latitude': latitude
-        },
-        options: Options(headers: {'Authorization': 'Bearer $token'}));
+        });
+      }
 
-    if (response.statusCode == 200) {
-      // ignore: use_build_context_synchronously
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const CreateInvitationScreen()));
+      Response response = await dio.post('http://localhost:19185/event',
+          data: data,
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
 
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("Maintenant, invitez des gens à votre événement !")),
-      );
+      if (response.statusCode == 200) {
+        // ignore: use_build_context_synchronously
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const CreateInvitationScreen()));
+
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content:
+                  Text("Maintenant, invitez des gens à votre événement !")),
+        );
+      }
+    } catch (error) {
+      print(error);
     }
   }
 
@@ -194,10 +214,6 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'La date et l\'heure doit être complété';
-                        } else if (!RegExp(
-                                r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$')
-                            .hasMatch(value)) {
-                          return 'La date et l\'heure peut uniquement contenir une date et une heure';
                         }
                         return null;
                       },
@@ -206,48 +222,14 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                           context,
                           showTitleActions: true,
                           onConfirm: (date) {
-                            String monthName = '';
-
-                            switch (date.month) {
-                              case 1:
-                                monthName = 'Janvier';
-                                break;
-                              case 2:
-                                monthName = 'Février';
-                                break;
-                              case 3:
-                                monthName = 'Mars';
-                                break;
-                              case 4:
-                                monthName = 'Avril';
-                                break;
-                              case 5:
-                                monthName = 'Mai';
-                                break;
-                              case 6:
-                                monthName = 'Juin';
-                                break;
-                              case 7:
-                                monthName = 'Juillet';
-                                break;
-                              case 8:
-                                monthName = 'Août';
-                                break;
-                              case 9:
-                                monthName = 'Septembre';
-                                break;
-                              case 10:
-                                monthName = 'Octobre';
-                                break;
-                              case 11:
-                                monthName = 'Nnullovembre';
-                                break;
-                              case 12:
-                                monthName = 'Décembre';
-                                break;
-                            }
-                            myControllerDateTime.text =
-                                '${date.day} $monthName ${date.year} à ${date.hour}h ${date.minute}min';
+                            myControllerDateTime.text = date
+                                .toString(); // ou toute autre format de date/heure souhaité
+                            myControllerDateTime.value =
+                                myControllerDateTime.value.copyWith(
+                              text: date.toString(),
+                              selection: TextSelection.collapsed(
+                                  offset: date.toString().length),
+                            );
                           },
                           currentTime: DateTime.now(),
                           locale: LocaleType.fr,
@@ -416,7 +398,8 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                                 null,
                                 null,
                                 _selectedLocation!.longitude,
-                                _selectedLocation!.latitude);
+                                _selectedLocation!.latitude,
+                                DateTime.parse(myControllerDateTime.text));
                           } else {
                             submitForm(
                                 myControllerTitle.text,
@@ -425,7 +408,8 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                                 myControllerCity.text,
                                 myControllerZipcode.text,
                                 null,
-                                null);
+                                null,
+                                DateTime.parse(myControllerDateTime.text));
                           }
                         }
                       },
