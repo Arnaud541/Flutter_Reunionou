@@ -3,7 +3,7 @@
 ## Participants : Paul Gillon, Andriy Lebedev, Arnaud Bourgoin et Damien Poirot.
 ### Application mobile fait par Arnaud et Damien.
 Liens vers les autres répositories :
-- [Api_Reunionou](https://github.com/Arnaud541/API_Reunionou)
+- [API_Reunionou](https://github.com/Arnaud541/API_Reunionou)
 - [VueJS_Reunionou](https://github.com/Arnaud541/VueJS_Reunionou)
 
 ## Fonctionnalités réalisées et auteurs:
