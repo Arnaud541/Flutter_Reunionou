@@ -2,12 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:reunionou/widgets/comment_preview.dart';
 import 'package:reunionou/widgets/navbar.dart';
 import 'package:reunionou/class/participant.dart';
 import 'package:reunionou/widgets/participant_preview.dart';
 
-import 'package:reunionou/class/comment.dart';
 import 'package:reunionou/class/event.dart';
 
 class EventScreen extends StatefulWidget {
@@ -57,6 +55,7 @@ class EventScreenState extends State<EventScreen> {
       for (var participant in response.data['participants']) {
         participants.add(Participant(
             participant["user_id"] ?? participant["id"],
+            participant["event_id"],
             participant["firstname"],
             participant["lastname"],
             'https://gravatar.com/avatar/7f4560dbdee0a44569dc3fdb22ea9c8b?s=400&d=robohash&r=x',
@@ -66,24 +65,6 @@ class EventScreenState extends State<EventScreen> {
     }
     return participants;
   }
-
-  // Future<List<Comment>> getComments() async {
-  //   List<Comment> comments = [];
-  //   int id = _event.id;
-  //   print(id);
-  //   final Dio dio = Dio();
-  //   Response response =
-  //       await dio.get('http://localhost:19185/event/$id/comments');
-
-  //   for (var comment in response.data['comments']) {
-  //     comments.add(Comment(
-  //         comment["participant_firstname"],
-  //         comment["participant_lastname"],
-  //         comment["created_at"],
-  //         comment["content"]));
-  //   }
-  //   return comments;
-  // }
 
   Future<Map<String, double>> getCoordinates() async {
     final Dio dio = Dio();

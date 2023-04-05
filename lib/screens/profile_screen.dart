@@ -17,8 +17,6 @@ class ProfileScreen extends StatelessWidget {
     Response response =
         await dio.get('http://localhost:19185/user/$id/live-events');
     for (var event in response.data['events']) {
-      print(event["longitude"].runtimeType);
-      print(event["latitude"].runtimeType);
       currentEvents.add(Event(
           event["id"],
           event["title"],
@@ -105,7 +103,6 @@ class ProfileScreen extends StatelessWidget {
                 }
 
                 if (snapshot.hasError) {
-                  print(snapshot.error);
                   return const Text("Erreur d'affichage");
                 }
 

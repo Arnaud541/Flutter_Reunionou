@@ -25,21 +25,30 @@ class ParticipantPreviewState extends State<ParticipantPreview> {
   }
 
   void changeStatus(BuildContext context, String status) async {
-    setState(() {
-      _participant.status = status;
-    });
+    String token = Provider.of<UserProvider>(context, listen: false)
+        .currentUser!
+        .accessToken;
 
     showDialog(
         context: context,
         builder: (BuildContext context) {
-          return const PopupComment();
+          return PopupComment(
+            eventId: _participant.eventId,
+          );
         });
 
     final Dio dio = Dio();
-    Response response = await dio.put('https://fruits.shrp.dev/auth/login',
-        data: {'id_participant': _participant.id, 'status': status});
+    int user_id = _participant.id;
+    int event_id = _participant.eventId;
+    Response response = await dio.put(
+        'http://localhost:19185/event/$event_id/user/$user_id',
+        data: {'status': status},
+        options: Options(headers: {'Authorization': 'Bearer $token'}));
 
     if (response.statusCode == 200) {
+      setState(() {
+        _participant.status = status;
+      });
       final snackBar = SnackBar(
         content: status == "accepted"
             ? const Text("Vous avez accepté l'évènement")
@@ -48,7 +57,7 @@ class ParticipantPreviewState extends State<ParticipantPreview> {
         backgroundColor: Colors.orange,
       );
 
-      //ignore: use_build_context_synchronously
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
@@ -56,30 +65,28 @@ class ParticipantPreviewState extends State<ParticipantPreview> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        leading: CircleAvatar(
-          backgroundImage: NetworkImage(_participant.avatar),
-          backgroundColor: Colors.transparent,
-        ),
-        title: Text("${_participant.firstname} ${_participant.lastname}"),
-        subtitle: Text(_participant.status),
-        isThreeLine: true,
-        trailing: Provider.of<UserProvider>(context, listen: false)
-                    .currentUser!
-                    .email ==
-                _participant.email
-            ? Wrap(direction: Axis.vertical, children: [
-                IconButton(
-                    icon: const Icon(Icons.thumb_up),
-                    color: Colors.green,
-                    onPressed: () => changeStatus(context, "accepted")),
-                IconButton(
-                    icon: const Icon(Icons.thumb_down),
-                    color: Colors.red,
-                    onPressed: () => changeStatus(context, "declined")),
-              ])
-            : null,
-        onTap: () {
-          null;
-        });
+      leading: CircleAvatar(
+        backgroundImage: NetworkImage(_participant.avatar),
+        backgroundColor: Colors.transparent,
+      ),
+      title: Text("${_participant.firstname} ${_participant.lastname}"),
+      subtitle: Text(_participant.status),
+      isThreeLine: true,
+      trailing: Provider.of<UserProvider>(context, listen: false)
+                  .currentUser!
+                  .email ==
+              _participant.email
+          ? Wrap(direction: Axis.vertical, children: [
+              IconButton(
+                  icon: const Icon(Icons.thumb_up),
+                  color: Colors.green,
+                  onPressed: () => changeStatus(context, "accepted")),
+              IconButton(
+                  icon: const Icon(Icons.thumb_down),
+                  color: Colors.red,
+                  onPressed: () => changeStatus(context, "declined")),
+            ])
+          : null,
+    );
   }
 }
