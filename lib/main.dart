@@ -36,9 +36,9 @@ class MyApp extends StatelessWidget {
             case '/profile':
               return MaterialPageRoute(
                   builder: (context) => const ProfileScreen());
-            case '/invitation':
-              return MaterialPageRoute(
-                  builder: (context) => const CreateInvitationScreen());
+            // case '/invitation':
+            //   return MaterialPageRoute(
+            //       builder: (context) => const CreateInvitationScreen(id: ,));
             case '/create_event':
               return MaterialPageRoute(
                   builder: (context) => const CreateEventScreen());

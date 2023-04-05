@@ -93,7 +93,8 @@ class CreateEventScreenState extends State<CreateEventScreen> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => const CreateInvitationScreen()));
+                builder: (context) =>
+                    CreateInvitationScreen(id: response.data["event"]["id"])));
 
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
@@ -379,7 +380,7 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                                 } else if (!RegExp(
                                         r'^(0[1-9]|[1-9][0-9])[0-9]{3}$')
                                     .hasMatch(value)) {
-                                  return 'Le code postal peut uniquement contenir des Chiffres';
+                                  return 'Le code postal peut uniquement contenir des chiffres';
                                 }
                                 return null;
                               },
