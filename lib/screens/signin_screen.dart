@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:jwt_decode/jwt_decode.dart';
 import 'package:provider/provider.dart';
 import 'package:reunionou/class/user.dart';
 import 'package:reunionou/providers/user_provider.dart';
@@ -42,7 +40,7 @@ class SigninScreenState extends State<SigninScreen> {
       final User user = User(
           response.data["user"]["id"],
           response.data["user"]["email"],
-          null,
+          'https://gravatar.com/avatar/7f4560dbdee0a44569dc3fdb22ea9c8b?s=400&d=robohash&r=x',
           response.data["user"]["firstname"],
           response.data["user"]["lastname"],
           response.data["token"]);
@@ -57,7 +55,7 @@ class SigninScreenState extends State<SigninScreen> {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const HomeScreen()));
 
-      //ignore: use_build_context_synchronously
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Vous êtes connecté !")),
       );

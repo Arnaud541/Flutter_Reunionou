@@ -1,5 +1,5 @@
 class Event {
-  String id;
+  int id;
   String title;
   String description;
   double longitude;

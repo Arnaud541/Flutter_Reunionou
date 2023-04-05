@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:positioned_tap_detector_2/positioned_tap_detector_2.dart';
+import 'package:provider/provider.dart';
+import 'package:reunionou/providers/user_provider.dart';
 import 'package:reunionou/screens/create_invitation_screen.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
@@ -54,8 +56,11 @@ class CreateEventScreenState extends State<CreateEventScreen> {
       String? zipcode,
       double? longitude,
       double? latitude) async {
+    String token = Provider.of<UserProvider>(context, listen: false)
+        .currentUser!
+        .accessToken;
     final Dio dio = Dio();
-    Response response = await dio.post('https://fruits.shrp.dev/events',
+    Response response = await dio.post('http://localhost:19185/event',
         data: {
           'title': title,
           'description': description,
@@ -65,8 +70,7 @@ class CreateEventScreenState extends State<CreateEventScreen> {
           'longitude': longitude,
           'latitude': latitude
         },
-        options:
-            Options(headers: {'Authorization': 'Bearer <YOUR_AUTH_TOKEN>'}));
+        options: Options(headers: {'Authorization': 'Bearer $token'}));
 
     if (response.statusCode == 200) {
       // ignore: use_build_context_synchronously
@@ -74,6 +78,7 @@ class CreateEventScreenState extends State<CreateEventScreen> {
           context,
           MaterialPageRoute(
               builder: (context) => const CreateInvitationScreen()));
+
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -274,6 +279,8 @@ class CreateEventScreenState extends State<CreateEventScreen> {
                               child: FlutterMap(
                                 mapController: mapController,
                                 options: MapOptions(
+                                  minZoom: 3,
+                                  maxZoom: 18,
                                   center: LatLng(46.232193, 2.209667),
                                   zoom: 5,
                                   onTap: _onLocationSelected,

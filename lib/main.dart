@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:reunionou/providers/event_provider.dart';
 import 'package:reunionou/providers/user_provider.dart';
 import 'package:reunionou/screens/create_event_screen.dart';
 import 'package:reunionou/screens/event_screen.dart';
@@ -45,10 +46,12 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(
                   builder: (context) => const SigninScreen());
 
-/*            case '/event':
-              final eventId = "1";
-              final event = Provider.of<UserProvider>(context, listen: false).getEventById(eventId);
-              return MaterialPageRoute(builder: (context) => EventScreen(event));*/
+            // case '/event':
+            //   final arguments = ModalRoute.of(context)!.settings.arguments;
+            //   final event = Provider.of<EventProvider>(context, listen: false)
+            //       .getEventById(context, arguments as int);
+            //   return MaterialPageRoute(
+            //       builder: (context) => EventScreen(event: event));
             case '/signin_invitation':
               return MaterialPageRoute(
                   builder: (context) => const SigninInvitationScreen());

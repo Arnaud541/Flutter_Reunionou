@@ -1,7 +1,7 @@
 class User {
   int id;
   String email;
-  String? avatar;
+  String avatar;
   String firstname;
   String lastname;
   String accessToken;

@@ -67,13 +67,15 @@ class ProfileScreen extends StatelessWidget {
               child: Container(
                 width: 100,
                 height: 100,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.fromBorderSide(
+                  border: const Border.fromBorderSide(
                       BorderSide(width: 1, color: Colors.black45)),
                   image: DecorationImage(
                       image: NetworkImage(
-                          'https://gravatar.com/avatar/7f4560dbdee0a44569dc3fdb22ea9c8b?s=400&d=robohash&r=x'),
+                          Provider.of<UserProvider>(context, listen: false)
+                              .currentUser!
+                              .avatar),
                       fit: BoxFit.cover),
                 ),
               ),
@@ -106,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
                 }
 
                 if (snapshot.hasError) {
-                  return const Text("Error");
+                  return const Text("Erreur d'affichage");
                 }
 
                 return const CircularProgressIndicator();
@@ -130,7 +132,7 @@ class ProfileScreen extends StatelessWidget {
                 }
 
                 if (snapshot.hasError) {
-                  return const Text("Error");
+                  return const Text("Erreur d'affichage");
                 }
 
                 return const CircularProgressIndicator();

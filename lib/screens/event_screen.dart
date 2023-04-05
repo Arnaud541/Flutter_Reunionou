@@ -46,34 +46,37 @@ class EventScreenState extends State<EventScreen> {
   Future<List<Participant>> getParticipants() async {
     List<Participant> participants = [];
     final Dio dio = Dio();
+    int id = _event.id;
     Response response =
-        await dio.get('https://fruits.shrp.dev/items/fruits?fields=*.*');
+        await dio.get('http://localhost:19185/event/$id/participants');
 
-    for (var participant in response.data['data']) {
-      participants.add(Participant(
-          participant["id"],
-          participant["firstname"],
-          participant["lastname"],
-          participant["avatar"],
-          participant["status"],
-          participant["email"]));
+    if (response.statusCode == 200) {
+      for (var participant in response.data['participants']) {
+        participants.add(Participant(
+            participant["user_id"] ?? participant["id"],
+            participant["firstname"],
+            participant["lastname"],
+            participant["avatar"],
+            participant["status"],
+            participant["email"]));
+      }
     }
     return participants;
   }
 
   Future<List<Comment>> getComments() async {
     List<Comment> comments = [];
-
+    int id = _event.id;
     final Dio dio = Dio();
     Response response =
-        await dio.get('https://fruits.shrp.dev/items/fruits?fields=*.*');
+        await dio.get('http://localhost:19185/event/$id/comments');
 
-    for (var comment in response.data['data']) {
+    for (var comment in response.data['comments']) {
       comments.add(Comment(
           comment["participant_firstname"],
           comment["participant_lastname"],
-          comment["content"],
-          comment["created_at"]));
+          comment["created_at"],
+          comment["content"]));
     }
     return comments;
   }
@@ -137,7 +140,11 @@ class EventScreenState extends State<EventScreen> {
               const SizedBox(height: 25),
               Row(children: [
                 const Icon(Icons.location_on_rounded),
-                // _event.street == null && _event.city == null && _event.zipcode == null ? Text(_address[0]!["address"]) :
+                _event.street == null &&
+                        _event.city == null &&
+                        _event.zipcode == null
+                    ? Text(_address)
+                    : Text("${_event.street} ${_event.city} ${_event.zipcode}")
               ]),
               Row(children: const [
                 Icon(Icons.group),
@@ -192,7 +199,10 @@ class EventScreenState extends State<EventScreen> {
               ),
               FlutterMap(
                 options: MapOptions(
-                    center: LatLng(_event.longitude, _event.latitude),
+                    center: _event.longitude == null && _event.latitude == null
+                        ? LatLng(_coordinates["longitude"]!,
+                            _coordinates["latitude"]!)
+                        : LatLng(_event.longitude, _event.latitude),
                     zoom: 9.2),
                 nonRotatedChildren: [
                   AttributionWidget.defaultWidget(
@@ -209,7 +219,11 @@ class EventScreenState extends State<EventScreen> {
                   MarkerLayer(
                     markers: [
                       Marker(
-                          point: LatLng(_event.longitude, _event.latitude),
+                          point: _event.longitude == null &&
+                                  _event.latitude == null
+                              ? LatLng(_coordinates["longitude"]!,
+                                  _coordinates["latitude"]!)
+                              : LatLng(_event.longitude, _event.latitude),
                           width: 80,
                           height: 80,
                           builder: (context) => const Icon(Icons.location_on))
